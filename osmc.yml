@@ -1,0 +1,8 @@
+---
+- hosts: osmc
+  become: yes
+  tasks:
+  - name: make sure locale are properly generated
+    locale_gen:
+      name: en_US.UTF-8
+      state: present
