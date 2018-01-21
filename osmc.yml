@@ -23,3 +23,11 @@
     apt:
       name: nodejs
       state: latest
+  - name: Install basic utils
+    apt:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - mc
+      - htop
+      - cron
