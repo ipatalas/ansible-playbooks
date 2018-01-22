@@ -31,3 +31,19 @@
       - mc
       - htop
       - cron
+  - name: Install Samba
+    apt:
+      name: smb-app-osmc
+      state: latest
+  - name: Configure Samba
+    copy:
+      src: smb-shares.conf
+      dest: /etc/samba/smb-shares.conf
+      owner: osmc
+      group: osmc
+      mode: 0644
+  - name: Restart Samba
+    service:
+      name: samba
+      state: restarted
+
