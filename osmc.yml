@@ -32,27 +32,5 @@
       - htop
       - cron
 
-  - name: Check if Media disk is mounted
-    stat:
-      path: /media/Backups
-    register: media
-
-  - name: Install Samba
-    apt:
-      name: smb-app-osmc
-      state: latest
-
-  - name: Configure Samba
-    copy:
-      src: smb-shares.conf
-      dest: /etc/samba/smb-shares.conf
-      owner: osmc
-      group: osmc
-      mode: 0644
-    when: media.stat.exists
-
-  - name: Restart Samba
-    service:
-      name: samba
-      state: restarted
-    when: media.stat.exists
+  - name: Import Samba tasks
+    import_tasks: samba.yml
