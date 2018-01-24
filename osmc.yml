@@ -34,6 +34,8 @@
 
   - name: Import Samba tasks
     import_tasks: samba.yml
-
   - name: Import Influx tasks
     import_tasks: influx.yml
+  - name: Import Grafana tasks
+    import_tasks: grafana.yml
+

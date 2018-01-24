@@ -1,0 +1,18 @@
+- name: Add Grafana GPG Key
+  apt_key:
+    url: https://bintray.com/user/downloadSubjectPublicKey?username=bintray
+    state: present
+- name: Add Grafana repository
+  apt_repository:
+    repo: "deb https://dl.bintray.com/fg2it/deb stretch main"
+    state: present
+    update_cache: yes
+- name: Install Grafana
+  apt:
+    name: grafana
+    state: latest
+- name: Start Grafana
+  service:
+    name: grafana-server
+    state: started
+
