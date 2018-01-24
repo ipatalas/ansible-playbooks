@@ -1,0 +1,63 @@
+- name: Add Influx GPG Key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+- name: Add Influx repository
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/debian stretch stable"
+    state: present
+    update_cache: yes
+- name: Install Influx
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - influxdb
+    - telegraf
+- name: Start Influx
+  service:
+    name: influxdb
+    state: started
+
+- name: Copy TP-Link script
+  copy:
+    src: tplink
+    dest: /home/osmc
+    owner: osmc
+    group: osmc
+    mode: 0644
+
+- name: Install npms
+  npm:
+    path: /home/osmc/tplink
+
+- name: Change Telegraf interval
+  lineinfile:
+    path: /etc/telegraf/telegraf.conf
+    regexp: '^\s*interval\s*=\s*"\d+s"'
+    line: '  interval = "30s"'
+- name: Update Telegraf config
+  blockinfile:
+    path: /etc/telegraf/telegraf.conf
+    block: "{{ lookup('file', 'telegraf-custom.conf') }}"
+    marker: "# {mark} ANSIBLE BLOCK - static"
+- name: Enable TP-Link energy meters in Telegraf
+  blockinfile:
+    path: /etc/telegraf/telegraf.conf
+    block: |
+      [[inputs.exec]]
+        commands = [
+         "node /home/osmc/tplink/index.js {{ item.ip }}"
+        ]
+        timeout = "5s"
+        name_suffix = "_tplink_{{ item.name }}"
+        data_format = "json"
+    marker: "# {mark} ANSIBLE BLOCK - {{ item.name }}"
+  with_items:
+    - { name: pc, ip: 192.168.1.135 }
+    - { name: tv, ip: 192.168.1.104 }
+    - { name: philips, ip: 192.168.1.82 }
+- name: Restart Telegraf
+  service:
+    name: telegraf
+    state: restarted
