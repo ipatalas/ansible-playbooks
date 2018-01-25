@@ -1,24 +1,3 @@
-- name: Add Influx GPG Key
-  apt_key:
-    url: https://repos.influxdata.com/influxdb.key
-    state: present
-- name: Add Influx repository
-  apt_repository:
-    repo: "deb https://repos.influxdata.com/debian stretch stable"
-    state: present
-    update_cache: yes
-- name: Install Influx
-  apt:
-    name: "{{ item }}"
-    state: latest
-  with_items:
-    - influxdb
-    - telegraf
-- name: Start Influx
-  service:
-    name: influxdb
-    state: started
-
 - name: Copy TP-Link script
   copy:
     src: tplink
