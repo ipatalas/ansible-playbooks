@@ -1,0 +1,4 @@
+- name: Restart Samba
+  service:
+    name: samba
+    state: restarted

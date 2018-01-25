@@ -15,11 +15,13 @@
     path: /etc/telegraf/telegraf.conf
     regexp: '^\s*interval\s*=\s*"\d+s"'
     line: '  interval = "30s"'
+  notify: Restart Telegraf
 - name: Update Telegraf config
   blockinfile:
     path: /etc/telegraf/telegraf.conf
     block: "{{ lookup('file', 'telegraf-custom.conf') }}"
     marker: "# {mark} ANSIBLE BLOCK - static"
+  notify: Restart Telegraf
 - name: Enable TP-Link energy meters in Telegraf
   blockinfile:
     path: /etc/telegraf/telegraf.conf
@@ -36,7 +38,4 @@
     - { name: pc, ip: 192.168.1.135 }
     - { name: tv, ip: 192.168.1.104 }
     - { name: philips, ip: 192.168.1.82 }
-- name: Restart Telegraf
-  service:
-    name: telegraf
-    state: restarted
+  notify: Restart Telegraf

@@ -15,10 +15,7 @@
     owner: osmc
     group: osmc
     mode: 0644
+  notify:
+    - Restart Samba
   when: media.stat.exists
 
-- name: Restart Samba
-  service:
-    name: samba
-    state: restarted
-  when: media.stat.exists
