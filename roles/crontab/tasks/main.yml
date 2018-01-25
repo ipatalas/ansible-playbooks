@@ -1,0 +1,8 @@
+- name: Influx backup
+  become: false
+  cron:
+    name: "Backup InfluxDB"
+    minute: 0
+    hour: 0
+    dow: 0
+    job: "influxd backup -database telegraf /media/Backups/Influx"
