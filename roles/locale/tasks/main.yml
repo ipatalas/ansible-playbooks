@@ -10,5 +10,11 @@
     name: "{{ locale }}"
     state: present
 
+- name: check locale
+  shell: "cat /etc/default/locale | grep ^LANG={{ locale }}"
+  register: result
+  ignore_errors: true
+
 - name: set locale
   command: "update-locale LANG={{ locale }}"
+  when: result|failed
