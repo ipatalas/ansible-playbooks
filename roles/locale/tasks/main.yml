@@ -1,5 +1,14 @@
-- name: make sure en_US.UTF-8 locale are properly generated
+- name: select default locale
+  debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: "{{ locale }}"
+    vtype: select
+
+- name: regenerate locale
   locale_gen:
-    name: en_US.UTF-8
+    name: "{{ locale }}"
     state: present
 
+- name: set locale
+  command: "update-locale LANG={{ locale }}"

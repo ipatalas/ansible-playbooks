@@ -2,6 +2,7 @@
 - hosts: osmc
   become: yes
   roles:
+# TODO: add tags
     - common
     - locale
     - nodejs
