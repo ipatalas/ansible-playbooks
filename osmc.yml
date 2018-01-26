@@ -2,12 +2,11 @@
 - hosts: osmc
   become: yes
   roles:
-# TODO: add tags
-    - common
-    - locale
-    - nodejs
-    - samba
-    - influx
-    - telegraf
-    - grafana
-    - crontab
+    - { role: common, tags: ["common"] }
+    - { role: locale, tags: ["locale"] }
+    - { role: nodejs, tags: ["nodejs"] }
+    - { role: samba, tags: ["samba"] }
+    - { role: influx, tags: ["influx"] }
+    - { role: telegraf, tags: ["telegraf"] }
+    - { role: grafana, tags: ["grafana"] }
+    - { role: crontab, tags: ["crontab"] }
