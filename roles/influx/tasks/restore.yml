@@ -1,0 +1,15 @@
+- name: Stop InfluxDB before restoring
+  service:
+    name: influxdb
+    state: stopped
+- name: Restore metadata
+  command: "influxd restore -metadir /var/lib/influxdb/meta /media/Backups/Influx/latest"
+- name: Restore data
+  command: "influxd restore -database telegraf -datadir /var/lib/influxdb/data /media/Backups/Influx/latest"
+- name: Restore owner
+  file:
+    path: /var/lib/influxdb
+    owner: influxdb
+    group: influxdb
+    recurse: true
+    state: directory
