@@ -1,0 +1,11 @@
+- name: Stop service before restoring
+  service:
+    name: grafana-server
+    state: stopped
+- name: Restore
+  unarchive:
+    src: /media/Backups/Grafana/latest.tgz
+    dest: /var/lib/grafana
+    owner: grafana
+    group: grafana
+    remote_src: true

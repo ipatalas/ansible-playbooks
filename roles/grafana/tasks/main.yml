@@ -11,8 +11,10 @@
   apt:
     name: grafana
     state: latest
+- name: Restore database
+  include_tasks: "restore.yml"
+  when: restore is defined
 - name: Start Grafana
   service:
     name: grafana-server
     state: started
-

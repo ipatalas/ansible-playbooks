@@ -5,7 +5,13 @@
     owner: osmc
     group: osmc
     mode: 0744
-
+- name: Copy Grafana backup script
+  copy:
+    src: backup_grafana.sh
+    dest: ~/backup_grafana.sh
+    owner: osmc
+    group: osmc
+    mode: 0744
 - name: Influx backup
   become: false
   cron:
@@ -14,12 +20,25 @@
     hour: 0
     dow: 0
     job: "~/backup_influx.sh >> ~/backup_influx.log 2>&1"
-
-- name: Clean old backups
+- name: Clean old Influx backups
   become: false
   cron:
-    name: "Clean old backups"
+    name: "Clean old Influx backups"
     minute: 1
     hour: 0
     dow: 0
     job: "find /media/Backups/Influx/* -maxdepth 1 -type d -regex '.*-[0-9]+-[0-9]+' -mtime +37 -delete"
+- name: Grafana backup
+  become: false
+  cron:
+    name: "Backup Grafana settings"
+    minute: 2
+    hour: 0
+    job: "~/backup_grafana.sh >> ~/backup_grafana.log 2>&1"
+- name: Clean old Grafana backups
+  become: false
+  cron:
+    name: "Clean old Grafana backups"
+    minute: 3
+    hour: 0
+    job: "find /media/Backups/Grafana/* -mtime +10 -delete"
