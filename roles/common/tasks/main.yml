@@ -12,3 +12,10 @@
     - htop
     - cron
 
+- name: Configure prompt
+  become: false
+  blockinfile:
+    dest: ~/.bashrc
+    marker: "# {mark} Ansible - prompt"
+    block: |
+      PS1="\[\e]0;\u@\h: \w\a\]\[\e[1;32m\]\u@\H:\[\e[m\] \[\e[1;37m\]\w\[\e[m\]\n\[\e[0;33m\]\[\e[1;31m\]\$\[\e[m\] "
