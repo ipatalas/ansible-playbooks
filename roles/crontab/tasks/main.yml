@@ -1,17 +1,13 @@
-- name: Copy Influx backup script
+- name: Copy backup scripts
+  become: false
   copy:
-    src: backup_influx.sh
-    dest: ~/backup_influx.sh
+    src: "{{ item.path }}"
+    dest: "~/{{ item.path }}"
     owner: osmc
     group: osmc
     mode: 0744
-- name: Copy Grafana backup script
-  copy:
-    src: backup_grafana.sh
-    dest: ~/backup_grafana.sh
-    owner: osmc
-    group: osmc
-    mode: 0744
+  with_filetree: .
+  when: item.state == 'file' and item.path == item.path|regex_search('backup_.*\.sh$')
 - name: Influx backup
   become: false
   cron:
@@ -28,17 +24,24 @@
     hour: 0
     dow: 0
     job: "find /media/Backups/Influx/* -maxdepth 1 -type d -regex '.*-[0-9]+-[0-9]+' -mtime +37 -delete"
-- name: Grafana backup
+
+- name: Configure daily backups
   become: false
   cron:
-    name: "Backup Grafana settings"
+    name: "Backup {{ item|capitalize }} settings"
     minute: 2
     hour: 0
-    job: "~/backup_grafana.sh >> ~/backup_grafana.log 2>&1"
-- name: Clean old Grafana backups
+    job: "~/backup_{{ item }}.sh >> ~/backup_{{ item }}.log 2>&1"
+  with_items:
+    - grafana
+    - kodi
+- name: Configure cleaning daily backups
   become: false
   cron:
-    name: "Clean old Grafana backups"
+    name: "Clean {{ item.name }} backups"
     minute: 3
     hour: 0
-    job: "find /media/Backups/Grafana/* -mtime +10 -delete"
+    job: "find {{ item.path }}/* -mtime +10 -delete"
+  with_items:
+    - { name: Grafana, path: "/media/Backups/Grafana" }
+    - { name: Kodi, path: "/media/Backups/osmc\\ backup" }
