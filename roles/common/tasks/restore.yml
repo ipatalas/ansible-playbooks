@@ -1,0 +1,23 @@
+- name: Stop Kodi before restoring
+  service:
+    name: mediacenter
+    state: stopped
+- name: Backup old settings
+  command: mv /home/osmc/.kodi/userdata /home/osmc/.kodi/userdata-org
+  args:
+    creates: /home/osmc/.kodi/userdata-org
+- name: Create directory
+  file:
+    path: /home/osmc/.kodi/userdata
+    state: directory
+- name: Restore
+  unarchive:
+    src: "/media/Backups/osmc backup/latest.tgz"
+    dest: /home/osmc/.kodi/userdata/
+    owner: osmc
+    group: osmc
+    remote_src: true
+- name: Start Kodi
+  service:
+    name: mediacenter
+    state: started
