@@ -10,32 +10,36 @@
   npm:
     path: /home/osmc/tplink
 
-- name: Change Telegraf interval
-  lineinfile:
-    path: /etc/telegraf/telegraf.conf
-    regexp: '^\s*interval\s*=\s*"\d+s"'
-    line: '  interval = "30s"'
-  notify: Restart Telegraf
-- name: Update Telegraf config
-  blockinfile:
-    path: /etc/telegraf/telegraf.conf
-    block: "{{ lookup('file', 'telegraf-custom.conf') }}"
-    marker: "# {mark} ANSIBLE BLOCK - static"
-  notify: Restart Telegraf
-- name: Enable TP-Link energy meters in Telegraf
-  blockinfile:
-    path: /etc/telegraf/telegraf.conf
-    block: |
-      [[inputs.exec]]
-        commands = [
-         "node /home/osmc/tplink/index.js {{ item.ip }}"
-        ]
-        timeout = "5s"
-        name_suffix = "_tplink_{{ item.name }}"
-        data_format = "json"
-    marker: "# {mark} ANSIBLE BLOCK - {{ item.name }}"
-  with_items:
-    - { name: pc, ip: 192.168.1.135 }
-    - { name: tv, ip: 192.168.1.104 }
-    - { name: philips, ip: 192.168.1.82 }
-  notify: Restart Telegraf
+- name: Update Telegraf configuration
+  vars:
+    config_file: /etc/telegraf/telegraf.conf
+  block:
+  - name: Change Telegraf interval
+    lineinfile:
+      path: "{{ config_file }}"
+      regexp: '^\s*interval\s*=\s*"\d+s"'
+      line: '  interval = "30s"'
+    notify: Restart Telegraf
+  - name: Update Telegraf config
+    blockinfile:
+      path: "{{ config_file }}"
+      block: "{{ lookup('file', 'telegraf-custom.conf') }}"
+      marker: "# {mark} ANSIBLE BLOCK - static"
+    notify: Restart Telegraf
+  - name: Enable TP-Link energy meters in Telegraf
+    blockinfile:
+      path: "{{ config_file }}"
+      block: |
+        [[inputs.exec]]
+          commands = [
+           "node /home/osmc/tplink/index.js {{ item.ip }}"
+          ]
+          timeout = "5s"
+          name_suffix = "_tplink_{{ item.name }}"
+          data_format = "json"
+      marker: "# {mark} ANSIBLE BLOCK - {{ item.name }}"
+    with_items:
+      - { name: pc, ip: 192.168.1.135 }
+      - { name: tv, ip: 192.168.1.104 }
+      - { name: philips, ip: 192.168.1.82 }
+    notify: Restart Telegraf
