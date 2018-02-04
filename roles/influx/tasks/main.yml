@@ -14,10 +14,18 @@
   with_items:
     - influxdb
     - telegraf
+  notify: Restart Influx
+- name: Update configuration
+  ini_file:
+    path: /etc/influxdb/influxdb.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "monitor", option: "store-interval", value: '"30s"' }
+    - { section: "http", option: "log-enabled", value: "false" }
+    - { section: "continuous_queries", option: "enabled", value: "false" }
+  notify: Restart Influx
 - name: Restore database
   include_tasks: "restore.yml"
   when: restore is defined
-- name: Start Influx
-  service:
-    name: influxdb
-    state: started

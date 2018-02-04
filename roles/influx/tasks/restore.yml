@@ -13,3 +13,7 @@
     group: influxdb
     recurse: true
     state: directory
+- name: Start InfluxDB
+  service:
+    name: influxdb
+    state: started
