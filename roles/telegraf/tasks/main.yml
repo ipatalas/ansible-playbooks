@@ -15,10 +15,13 @@
     config_file: /etc/telegraf/telegraf.conf
   block:
   - name: Change Telegraf interval
-    lineinfile:
+    ini_file:
       path: "{{ config_file }}"
-      regexp: '^\s*interval\s*=\s*"\d+s"'
-      line: '  interval = "30s"'
+      section: "{{ item.section }}"
+      option: "{{ item.option }}"
+      value: "{{ item.value }}"
+    with_items:
+      - { section: "agent", option: "interval", value: '"60s"' }
     notify: Restart Telegraf
   - name: Update Telegraf config
     blockinfile:
